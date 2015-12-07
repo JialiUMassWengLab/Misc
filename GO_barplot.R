@@ -1,0 +1,12 @@
+args<-commandArgs(trailingOnly=TRUE)
+data<-read.table("tmp", header=FALSE, sep="\t")
+title<-paste(args[1],".GO_barplot.pdf",sep="")
+main_ti<-paste(args[1]," GO enrichment",sep="")
+
+pdf(title, 21, 0.5*nrow(data)+6)
+par(mar=c(5,15,3,2)+0.1, fin=c(21,0.5*nrow(data)+6), pin=c(10,0.5*nrow(data)))
+a<-barplot(rev(data$V2), horiz=TRUE, width=0.5, space=0.3, col="red", main=main_ti, yaxt="n", ylim=c(0,nrow(data)), xlab="-Log p-value")
+text(cex=1.2, font=2, x=-0.01*(par("usr")[2]-par("usr")[1]), y=a, data$V1[1:18], xpd=TRUE, pos=2)
+#a<-barplot(data$V2[1:18], width=0.5, space=0.3, col="red", main=main_ti, xaxt="n", xlim=c(0,14), ylab="-Log p-value")
+#text(cex=0.85, x=a+0.2, y=-0.5, data$V1[1:18], xpd=TRUE, srt=45, pos=2)
+dev.off()
