@@ -1,0 +1,14 @@
+gcc -g -Wall -O2 -I/home/zhuangj/bin/samtools-0.1.19/ test.c -o test -L/home/zhuangj/bin/samtools-0.1.19/ -lbam -lm -lz -lpthread
+
+export LD_LIBRARY_PATH=~/bin/armadillo-7.300.1/usr/lib/
+g++ example1.cpp -o example1 -O2 -I/home/zhuangj/bin/armadillo-7.100.3/usr/include/ -L/home/zhuangj/bin/armadillo-7.100.3/usr/lib -larmadillo
+
+
+g++ -g -Wall -O2 -I/home/zhuangj/bin/samtools-0.1.19/ processBAM.cpp -c -L/home/zhuangj/bin/samtools-0.1.19/ -lbam -lm -lz -lpthread
+g++ -g -Wall -O2 -I/home/zhuangj/bin/samtools-0.1.19/ -I/home/zhuangj/bin/armadillo-7.100.3/usr/include/ EM.cpp -o EM processBAM.o -L/home/zhuangj/bin/samtools-0.1.19/ -L/home/zhuangj/bin/armadillo-7.100.3/usr/lib -lbam -lm -lz -lpthread -larmadillo
+
+g++ -g -Wall -O2 -I/home/zhuangj/bin/samtools-0.1.19/ -I/home/zhuangj/bin/armadillo-7.300.1/usr/include/ EMforSingleLocus.cpp -o EMforSingleLocus processBAM.o -L/home/zhuangj/bin/samtools-0.1.19/ -L/home/zhuangj/bin/armadillo-7.300.1/usr/lib -lbam -lm -lz -lpthread -larmadillo
+
+
+GTCGTATCCTGAGT
+39486471
