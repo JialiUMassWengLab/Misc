@@ -1,0 +1,148 @@
+<div>
+  <p> </p>
+  <h3>
+    <strong>Graphs: </strong>
+  </h3>
+  <p>
+    {% for graph in graphs.pdf %}
+    <ac:structured-macro ac:name="view-file">
+      <ac:parameter ac:name="name">
+	<ri:attachment ri:filename="{{ graph }}"/>
+      </ac:parameter>
+    </ac:structured-macro>
+    {% endfor %}
+  </p>
+  <p>
+    {% for graph in graphs.png %}
+    <ac:image ac:height="250">
+      <ri:attachment ri:filename="{{ graph }}"/>
+    </ac:image>
+    {% endfor %}
+  </p>
+  <p> </p>
+  <p> </p>
+  <ac:structured-macro ac:name="html" ac:schema-version="1">
+    <ac:plain-text-body>
+      <![CDATA[  
+        <div id="myDiv1" style="width: 75%; min-height: 500px"></div>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script>
+	  var data = JSON.parse('{{ readCompJSON | safe }}');
+	  
+	  var layout = {
+	  title: 'Gene type composision by read counts',
+	  barmode: 'stack',
+	  autosize: false,
+	  width: 1200,
+	  margin: {l: 300}
+	  };
+
+	  Plotly.newPlot('myDiv1', data, layout);
+	</script>]]>
+    </ac:plain-text-body>
+  </ac:structured-macro>
+  <p> </p>
+  <ac:structured-macro ac:name="html" ac:schema-version="1">
+    <ac:plain-text-body>
+      <![CDATA[  
+        <div id="myDiv2" style="width: 75%; min-height: 500px"></div>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script>
+	  var data = JSON.parse('{{ tpmCompJSON | safe }}');
+	  
+	  var layout = {
+	  title: 'Gene type composision by TPM',
+	  barmode: 'stack',
+	  autosize: false,
+	  width: 1200,
+	  margin: {l: 300}
+	  };
+
+	  Plotly.newPlot('myDiv2', data, layout);
+	</script>]]>
+    </ac:plain-text-body>
+  </ac:structured-macro>
+  <p> </p>
+  <h3>
+    <strong>Sample stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 54.9643%;">
+    <colgroup>
+      <col style="width: 48.6513%;"/>
+      <col style="width: 51.3487%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+	{% for measure in statsHeader %}
+        <th>{{ measure }}</th>
+	{% endfor %}
+      </tr>
+      {% for sample in statsSamples %}
+      <tr>
+	{% for value in sample %}
+	<td>{{ value }}</td>
+	{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>Genes detected:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 54.9643%;">
+    <colgroup>
+      <col style="width: 48.6513%;"/>
+      <col style="width: 51.3487%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+	{% for measure in genesHeader %}
+        <th>{{ measure }}</th>
+	{% endfor %}
+      </tr>
+      {% for sample in genesSamples %}
+      <tr>
+	{% for value in sample %}
+	<td>{{ value }}</td>
+	{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>ERCC stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 54.9643%;">
+    <colgroup>
+      <col style="width: 48.6513%;"/>
+      <col style="width: 51.3487%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+	{% for measure in erccHeader %}
+        <th>{{ measure }}</th>
+	{% endfor %}
+      </tr>
+      {% for sample in erccSamples %}
+      <tr>
+	{% for value in sample %}
+	<td>{{ value }}</td>
+	{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>Tables: </strong>
+  </h3>
+  {% for table in tables %}
+  <p>
+    <ac:image ac:height="250">
+      <ri:attachment ri:filename="{{ table }}"/>
+    </ac:image>
+  </p>
+  {% endfor %}
+</div>

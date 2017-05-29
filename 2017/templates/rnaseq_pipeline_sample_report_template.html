@@ -1,0 +1,208 @@
+<div>
+  <p> </p>
+  <h3>
+    <strong>Picard stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 54.9643%;">
+    <colgroup>
+      <col style="width: 48.6513%;"/>
+      <col style="width: 51.3487%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <th>Measure</th>
+        <th>Value</th>
+      </tr>
+      {% for stat in picardStats %}
+      <tr>
+	<td>{{ stat.measure }}</td>
+	<td>{{ stat.value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>Bam stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 55.0738%;">
+    <colgroup>
+      <col style="width: 48.4899%;"/>
+      <col style="width: 51.5101%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <th>Measure</th>
+        <th>Value</th>
+      </tr>
+      {% for stat in bamStats %}
+      <tr>
+	<td>{{ stat.measure }}</td>
+	<td>{{ stat.value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>Read distribution:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 32.4739%;">
+    <colgroup>
+      <col style="width: 57.6988%;"/>
+      <col style="width: 42.3012%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <td>Total Reads</td>
+        <td>{{ readDist.total_reads }}</td>
+      </tr>
+      <tr>
+        <td>Total Tags</td>
+        <td>{{ readDist.total_tags }}</td>
+      </tr>
+      <tr>
+        <td>Total Assigned Tags</td>
+        <td>{{ readDist.total_assigned_tags }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="relative-table wrapped" style="width: 66.9742%;">
+    <colgroup>
+      <col style="width: 27.8621%;"/>
+      <col style="width: 27.3103%;"/>
+      <col style="width: 23.5862%;"/>
+      <col style="width: 21.2414%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <th>Group</th>
+        <th>Total_bases</th>
+        <th>Tag_count</th>
+        <th>Tags/Kb</th>
+      </tr>
+      {% for stat in readDist.stats %}
+      <tr>
+	<td>{{ stat.group }}</td>
+	<td>{{ stat.base }}</td>
+	<td>{{ stat.tag_count }}</td>
+	<td>{{ stat.tag_density }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>STAR stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 55.0738%;">
+    <colgroup>
+      <col style="width: 48.4899%;"/>
+      <col style="width: 51.5101%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <th>Measure</th>
+        <th>Value</th>
+      </tr>
+      {% for stat in starStats %}
+      <tr>
+	<td>{{ stat.measure }}</td>
+	<td>{{ stat.value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>RSEM stats:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 66.9742%;">
+    <colgroup>
+      <col style="width: 33.3%;"/>
+      <col style="width: 33.3%;"/>
+      <col style="width: 33.3%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+	<th>Gene type</th>
+	<th>Read counts (Pct)</th>
+	<th>TPM (Pct)</th>
+      </tr>
+      {% for stat in rsemStats %}
+      <tr>
+	{% for item in stat %}
+	<td>{{ item }}</td>
+	{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>Gene Counts:</strong>
+  </h3>
+  <table class="relative-table wrapped" style="width: 55.0738%;">
+    <colgroup>
+      <col style="width: 48.4899%;"/>
+      <col style="width: 51.5101%;"/>
+    </colgroup>
+    <tbody>
+      <tr>
+        <th>TPM cutoff</th>
+        <th>Number of protein-coding genes detected</th>
+      </tr>
+      {% for stat in geneCounts %}
+      <tr>
+	<td>{{ stat.TPM }}</td>
+	<td>{{ stat.counts }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p> </p>
+  <h3>
+    <strong>ERCC: </strong>
+  </h3>
+  <ac:structured-macro ac:name="html" ac:schema-version="1">
+    <ac:plain-text-body>
+      <![CDATA[
+        <div id="myDiv1" style="width: 45%; min-height: 600px"></div>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+          var data = JSON.parse('{{ ERCCjson | safe }}');
+
+          var layout = {
+          title: 'ERCC reads vs. copy numbers',
+	  hovermode: 'closest'
+          };
+
+          Plotly.newPlot('myDiv1', data, layout);
+        </script>]]>
+    </ac:plain-text-body>
+  </ac:structured-macro>
+  <p> </p>
+  <h3>
+    <strong>Graphs: </strong>
+  </h3>
+  <p>
+    {% for graph in graphs %}
+    <ac:structured-macro ac:name="view-file">
+      <ac:parameter ac:name="name">
+	<ri:attachment ri:filename="{{ graph }}"/>
+      </ac:parameter>
+    </ac:structured-macro>
+    {% endfor %}
+  </p>
+  <p> </p>
+  <h3>
+    <strong>Tables: </strong>
+  </h3>
+  {% for table in tables %}
+  <p>
+    <ac:image ac:height="250">
+      <ri:attachment ri:filename="{{ table }}"/>
+    </ac:image>
+  </p>
+  {% endfor %}
+</div>
