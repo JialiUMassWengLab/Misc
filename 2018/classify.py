@@ -200,8 +200,7 @@ def plotMeanROC2(df,target,para,clf,prefix):
 def writeScores(df,target,para,clf,prefix):
     repeats = []
     for i in range(15):
-        #X_train,X_test,y_train,y_test,description = splitTrainTest(df,target,129+i*3)
-        X_train,X_test,y_train,y_test = splitTrainTest2(df1,df2,target)
+        X_train,X_test,y_train,y_test,description = splitTrainTest(df,target,129+i*3)
         if clf == 'LR':
             scores = LRClassifier(X_train,X_test,y_train,y_test,para[0])[3]
         elif clf == 'RF':
