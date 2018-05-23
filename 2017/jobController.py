@@ -107,7 +107,7 @@ def submit(samples,InfoFile,configFile):
                         if re.search(r'[0-9a-f]+',a[0]):
                             jobsInfo[sample].update({'docker_id':a[0][:12]})
                             finishedCommands += 1
-                        elif re.search(r'failed to run commands',a[2]):
+                        elif re.search(r'failed to run commands',' '.join(a[:6])):
                             command_id = subprocess.check_output( 'aws ssm send-command --instance-ids %s --document-name "AWS-RunShellScript" --comment "Run docker command" --parameters commands=\'%s %s %s\' --output text --query "Command.CommandId"' % (jobsInfo[sample]['instance_id'],config['dockerCommand'],config['dockerImage'],config['commandInContainer']+sample), shell=True, stderr=subprocess.STDOUT )[:-1]
                             jobsInfo[sample].update({'command_id':command_id})
 

@@ -1,0 +1,35 @@
+#library(topGO)
+library(limma)
+library(org.Hs.eg.db)
+
+args <- commandArgs(trailingOnly=TRUE)
+data = read.table("~/NASH/2018AprReval2/1804Revalidation2.congregated.tsv",sep="\t",header=T)
+data["gene_id"] <- gsub(".[0-9]*$","",data[,"gene_id"])
+univ <- unlist(as.list(org.Hs.egENSEMBL2EG)[data[,"gene_id"]],use.names=F)
+
+files <- Sys.glob('*.comp*.csv')
+for (fn in files)
+{
+    print(fn)
+    #testNames <- scan(fn,what=character())
+    #geneList <- factor(as.integer(row.names(data) %in% testNames))
+    #names(geneList) <- row.names(data)
+    #GOdata <- new("topGOdata",description="try",ontology="BP",allGenes=geneList,annot=annFUN.org,nodeSize=5,ID="ensembl",mapping = "org.Hs.eg.db")    
+    #test.stat <- new("classicCount",testStatistic=GOFisherTest,name="Fisher test")
+    #resultFisher <- getSigGroups(GOdata,test.stat)
+    #table <- GenTable(GOdata,classic=resultFisher,topNodes=length(score(resultFisher)))
+    #table$adjustP = p.adjust(table$classic)
+    #table = table[table$adjustP < 0.01,]
+    #print(table)
+
+    ensemblIDs <- scan(fn,what=character())
+    ensemblIDs <- unlist(lapply(ensemblIDs,function(x) strsplit(basename(x),",")[[1]][1]))
+    entrezIDs <- unlist(as.list(org.Hs.egENSEMBL2EG)[ensemblIDs],use.names=F)
+    geneNames <- unlist(as.list(org.Hs.egSYMBOL)[entrezIDs],use.names=F)
+    #results <- kegga(entrezIDs,species="Hs",species.KEGG="hsa",FDR=0.1,universe=univ)
+    #sorted <- topKEGG(results,number=50)
+    results <- goana(entrezIDs,species="Hs",FDR=0.1,universe=univ)
+    sorted <- topGO(results,ontology="BP",number=50)
+    print(sorted)
+    #write.table(sorted,gsub('Genes.txt','Genes.GOenrich.txt',fn),sep=",",quote=FALSE)
+}
