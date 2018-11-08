@@ -1,0 +1,76 @@
+## Download data and preliminary QC
+
+suffix=161031_TH022_TMH036
+wget -r --user thill@molecularstethoscope.com --password yWa74NutubEKDUbs --directory-prefix /mnt/shares2/sequencing_data/$suffix --no-directories ftp://ftp.adrive.com/sequencing_data/$suffix
+md5sum -c /mnt/shares2/sequencing_data/$suffix/fastq_md5.txt
+
+sftp molecularstethoscope@files.seqmatic.com
+
+##Download from SRA
+~/bin/edirect/esearch -db sra -query GSM2417344 | ~/bin/edirect/efetch --format runinfo | cut -d ',' -f 1 | grep SRR | xargs ~/bin/sratoolkit.2.8.1-2-centos_linux64/bin/fastq-dump --split-files --gzip
+
+
+##blast
+export BLASTDB=$BLASTDB:/mnt/shares2/blast_db/
+blastn -query try.fa -task megablast -db /mnt/shares2/blast_db/nt -out try -outfmt "6 qseqid sseqid scomnames qstart qend length pident score" -evalue 0.000001 -num_threads 4 -max_hsps 2 -max_target_seqs 10 
+
+
+##Remote launch AWS instance
+aws ec2 run-instances --image-id ami-a9d276c9 --count 1 --instance-type t2.micro --key-name us_west_oregon --security-groups launch-wizard-3
+aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].[InstanceId,State.Name]"
+aws ec2 terminate-instances --instance-ids i-0acd5cabdce5a670a
+aws s3 ls s3://ms-sequencing-data/AWS\ Logs/
+aws s3 rm --recursive s3://ms-sequencing-data/AWS\ Logs/fff9b319-7bae-4346-8c4c-833e454914a1/
+wget http://s3-us-west-2.amazonaws.com/ms-sequencing-data/Log.out
+
+
+##Get metadata from an EC2 instance
+curl http://169.254.169.254/latest/meta-data/instance-id
+##Confluence REST API
+curl -su jzhuang -X GET http://10.0.1.9:8090/rest/api/space | python -mjson.tool
+curl -v -su jzhuang -X POST -H "X-Atlassian-Token: no-check" -F "file=@/mnt/shares2/analysis/161110_TH024_JRP050/Shalfr2.geneBodyCoverage.curves.pdf" -F "comment=this is my file" "http://10.0.1.9:8090/rest/api/content/3211305/child/attachment" | python -mjson.tool
+
+
+##Install Docker on AWS instances: Ubuntu
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+apt-cache policy docker-engine
+sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+sudo apt-get update
+sudo apt-get install docker-engine
+sudo service docker start
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+
+##Launch AWS instance and mount EFS
+#launch instance and initialize using script setup_aws_instance.sh
+aws ec2 run-instances --iam-instance-profile Name=SSMaccess-profile --image-id ami-5ec1673e --count 1 --instance-type t2.micro --key-name us_west_oregon --security-groups launch-wizard-3 --user-data file://setup_aws_instance.sh
+#ACTION:login
+sudo yum -y install nfs-utils
+mkdir ~/efs-mount-point
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 172.31.16.174:/  ~/efs-mount-point
+
+docker run --rm -v /mnt/efs:/mnt/efs -it molestethdockerid/rnaseq-pipeline-image1 /bin/bash
+
+
+
+for i in *.filtered.dedup.bam; do name=${i/.filtered.dedup.bam/}; bedtools bamtobed -split -i $i | awk '{if ($0~/^chr/) print}' | sort -k1,1 -k2,2n -T ./ > $name.filtered.dedup.bed; coverageBed -a /mnt/shares/Users/jzhuang/window500.intergenic.intron.bed -b $name.filtered.dedup.bed -F 0.5 -counts -bed | awk '{if ($4>0) print}' > $name.intergenic.intron.bed; rm $name.filtered.dedup.bed; done
+
+#Run salmon separately
+for i in *.filtered.dedup.bam; do name=${i/.filtered.dedup.bam/}; bam2fastq -o $name.dedup#.fastq $i; ~/bin/Salmon-0.8.2_linux_x86_64/bin/salmon quant -i /mnt/shares2/annotations/hg38/RSEMref/hg38.transcriptome.with_ERCC.transcripts.fa.salmon.idx/ -g /mnt/shares2/annotations/hg38/STAR/GRCh38_Gencode24_ERCC/gencode.v24.primary_assembly.annotation.with_ERCC.gtf -o $name.salmon_out -l IU -1 $name.dedup_1.fastq -2 $name.dedup_2.fastq; done
+for i in *.filtered.dedup.bam; do name=${i/.filtered.dedup.bam/}; ~/bin/RSEM/rsem-calculate-expression -p 8 --bowtie2 --bowtie2-path ~/bin/bowtie2-2.3.0/ --paired-end $name.dedup_1.fastq $name.dedup_2.fastq /mnt/shares2/annotations/hg38/RSEMref/hg38.transcriptome.with_ERCC.bowtie2 $name.dedup; rm $name.dedup_?.fastq; done
+
+
+
+ls /mnt/shares2/sequencing_data/161110_TH024_JRP050/ | awk -F ',' '{if ($0~/_R1_001.fastq.gz$/) {gsub(/_S[[:digit:]]+_L00[[:digit:]]_R1_001.fastq.gz/,""); print}}' | uniq | paste -d, -s
+awk 'NR==FNR {h[$1]=1; next} {OFS="\t";a=$4;sub(/\.[0-9]+/,"",a);if (h[a]==1) print}' $proteinCoding $outPrefix\_cufflinks_out/genes.fpkm_tracking > tmp
+join -1 3 -2 1 <(sort -k3,3 ~/TCGA/tsGenes2.txt | awk '{sub(/\.[0-9]+/,"",$3);print $1,$2,$3}') <(cut -f1,5 Normal-FF-10811-enriched.dedup.genes.results | awk '{sub(/\.[0-9]+/,"",$1);print $1,$2}' | sort -k1,1) | awk '{if ($3!="Cells") print}' | sort +3rn -4 > tmp
+
+
+
+./Drop-seq_alignment2.sh -g mm10/STAR/ -r mm10/mm10.fasta -d /home/jzhuang@ms.local/bin/Drop-seq_tools-2.0.0 -o /mnt/nfs/sequencing_data/ClinChem_data/ -t /home/jzhuang@ms.local/ /mnt/nfs/sequencing_data/ClinChem_data/SRR6313172.unaligned.bam &
+./DigitalExpression I=/mnt/nfs/sequencing_data/ClinChem_data/final.bam O=/mnt/nfs/sequencing_data/ClinChem_data/DGE.mat OUTPUT_LONG_FORMAT=/mnt/nfs/sequencing_data/ClinChem_data/DGE.long.mat NUM_CORE_BARCODES=5000 RARE_UMI_FILTER_THRESHOLD=0.01 TMP_DIR=/home/jzhuang@ms.local &
