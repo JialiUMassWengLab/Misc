@@ -1,0 +1,27 @@
+~/bin/plink-1.9/plink --make-bed --file ClzTOP --map3 --out ClzTOP --maf 0.01 --freq
+~/bin/plink-1.9/plink --bfile ClzTOP -r
+~/bin/plink-1.9/plink --assoc perm fisher --bfile ClzTOP
+~/bin/plink-1.9/plink --bfile ClzTOP --recode --update-name rs_id.txt --map3 --out ClzTOP
+
+
+#split training/testing
+~/bin/plink-1.9/plink --bfile ClzTOP --keep-fam cross-valication-files/iter1train.txt --assoc perm fisher --out iter1train
+~/bin/plink-1.9/plink --bfile ClzTOP --keep-fam cross-valication-files/iter1test.txt --make-bed --out iter1test
+~/bin/PRSice/PRSice_linux --base iter1train.assoc.fisher --A1 A1 --A2 A2 --snp SNP --stat OR --pvalue P --target iter1test --ld 1k.merged --no-full --all-score
+Rscript ~/bin/PRSice/PRSice.R --prsice ~/bin/PRSice/PRSice_linux --base iter1train.assoc.fisher --A1 A1 --A2 A2 --snp SNP --stat OR --pvalue P --target iter1test --all-score --ld 1k.merged --no-full --quantile 20
+
+for i in `seq 1 20`; do ~/bin/plink-1.9/plink --bfile ClzTOP --keep-fam cross-valication-files/iter$i"train.txt" --assoc perm fisher --out iter$i"train"; ~/bin/plink-1.9/plink --bfile ClzTOP --keep-fam cross-valication-files/iter$i"test.txt" --make-bed --out iter$i"test"; ~/bin/PRSice/PRSice_linux --base iter$i"train.assoc.fisher" --A1 A1 --A2 A2 --snp SNP --stat OR --pvalue P --target iter$i"test" --ld 1k.merged --no-full --all-score --out iter$i --print-snp; done;
+
+
+#prepare 1k genome genotypes for LD calculation
+vcftools --gzvcf 1000genomesVCF/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz --snps SNP.list.txt --recode --out 1k.chr22
+~/bin/plink-1.9/plink --vcf 1k.chr22.recode.vcf --out 1k.chr22
+~/bin/plink-1.9/plink --bfile 1k.chr10 --merge-list list --make-bed --out 1k.merged
+~/bin/plink-1.9/plink --bfile 1k.merged --recode 12 --out 1k.merged
+~/bin/plink-1.9/plink --file 1k.merged --make-bed --out 1k.merged
+
+
+#running ldpred
+ldpred --debug coord --gf LDpred.ref --ssf tmp2 --N 769 --out iter3 --eff_type OR --rs SNP --A1 A1 --A2 A2 --pos BP --chr CHR --pval P --eff OR --case-freq F_A --control-freq F_U --max-freq-discrep 1 --maf 0
+ldpred gibbs --cf iter3 --ldr 5 --out iter3.weights --N 769 --ldf iter3.ld
+ldpred score --gf iter3test --rf iter3.weights --pf iter3test.fam --pf-format FAM --out iter3 --summary-file iter3.summary
