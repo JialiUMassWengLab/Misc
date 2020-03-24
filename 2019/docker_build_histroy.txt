@@ -1,0 +1,519 @@
+docker build -t molestethdockerid/downsample-fastq-image .
+docker login
+docker images
+docker push molestethdockerid/downsample-fastq-image
+docker rmi 9245d3e16dbb
+df -h /home/
+docker rmi f3420dd07029
+df -h /home/
+ls
+cd ..
+docker images
+docker run --rm -it molestethdockerid/downsample-fastq-image /bin/bash
+ls
+cd downsample-fastq-image/
+ls
+emacs Dockerfile 
+docker run --rm -it molestethdockerid/downsample-fastq-image /bin/bash
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/downsample-fastq-image .
+docker run --rm -it molestethdockerid/downsample-fastq-image /bin/bash
+docker push molestethdockerid/downsample-fastq-image
+ls
+logout
+ls
+cd Pipeline/
+ls
+mv download bowtie2.3.tar
+mv bowtie2.3.tar bowtie2.3.zip
+unzip bowtie2.3.zip 
+sudo apt-get install unzip
+unzip bowtie2.3.zip 
+cd bowtie2-2.3.0/
+ls
+./bowtie2
+sudo yum install tbb tbb-devel
+sudo apt-get install libtbb-dev
+./bowtie2
+cd ../../rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+cd ../Pipeline/
+ls
+rm -R bowtie2*
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.0/bowtie2-2.3.0-linux-x86_64.zip/download
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.0/bowtie2-2.3.0-linux-x86_64.zip/download ./bowtie2-2.3.0-linux-x86_64.zip
+ls
+rm download*
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.0/bowtie2-2.3.0-linux-x86_64.zip
+unzip bowtie2-2.3.0-linux-x86_64.zip 
+ls
+cd ../rnaseq-pipeline-image-rsem2/
+emacs Dockerfile
+rm Dockerfile~
+ls
+docker images
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 .
+docker images
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 /bin/bash
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2:latest /bin/bash
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 /bin/bash
+ls
+docker images
+docker login
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2
+docker images
+logout
+ls
+docker images
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 /bin/bash
+logout
+cd Pipeline/
+ls
+sudo apt-get install bedtools
+bedtools 
+ls
+/usr/bin/bedtools 
+cd ../rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 /bin/bash
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2
+docker images
+docker rmi da9e714329ad
+docker images
+logout
+cd Pipeline/
+wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitToFa
+chmod 755
+chmod 755 twoBitToFa 
+./twoBitToFa 
+cd ../rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2 /bin/bash
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2:bowtie2
+logout
+ls
+cd Pipeline/
+ls
+wget https://gsl.hudsonalpha.org/static/software/bam2fastq-1.1.0.tgz
+tar -zxvf bam2fastq-1.1.0.tgz 
+ls
+cd bam2fastq-1.1.0/
+ls
+make
+./bam2fastq 
+cd ..
+cd ../
+ls
+cd rnaseq-denovo-assembly/
+ls
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker run --rm -it molestethdockerid/rnaseq-denovo-assembly /bin/bash
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker login
+docker push molestethdockerid/rnaseq-denovo-assembly
+ls
+logout
+ls
+cd rnaseq-
+cd rnaseq-denovo-assembly/
+ls
+emacs Dockerfile 
+emacs ../downsample-fastq-image/
+emacs ../downsample-fastq-image/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+cd ../Pipeline/
+wget wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+unzip fastqc_v0.11.5.zip 
+ls
+cd FastQC/
+ls
+cd ../../
+cd rnaseq-denovo-assembly/
+ls
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+docker images
+docker rmi e2fa0fcc6c1b
+docker ps -a
+docker rm c6a56729763e
+docker rm 89529c2e7eed
+docker rmi e2fa0fcc6c1b
+emacs Dockerfile 
+cd ../Pipeline/
+ls
+rm -R FastQC/
+ls
+unzip fastqc_v0.11.5.zip 
+ls
+cd FastQC/
+ls
+cd ../../rnaseq-denovo-assembly/
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker images
+docker rmi e67f75854959
+docker run --rm -it molestethdockerid/rnaseq-denovo-assembly /bin/bash
+docker push molestethdockerid/rnaseq-denovo-assembly
+logout
+ls
+cd rnaseq-denovo-assembly/
+ls
+emacs ../rnaseq-pipeline-image2/
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker push molestethdockerid/rnaseq-denovo-assembly
+logout
+cd ls
+cd rnaseq-denovo-assembly/
+ls
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker push molestethdockerid/rnaseq-denovo-assembly
+logout
+cd rnaseq-pipeline-image2/
+ls
+emacs ../downsample-fastq-image/Dockerfile 
+emacs Dockerfile 
+emacs ../downsample-fastq-image/Dockerfile 
+emacs Dockerfile 
+emacs ../downsample-fastq-image/Dockerfile 
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image2 .
+docker images
+docker rmi 5a3b936a0d45
+docker rmi a0955325e463
+docker rmi 099041d2fb0b
+docker rmi 9567e9a62a6c
+docker rmi 36131617b726
+ls
+cd ..
+ls
+cd rnaseq-pipeline-image-rsem2/
+docker images
+docker rmi 099041d2fb0b
+docker rm 761fc7207b03
+docker rmi 099041d2fb0b
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image2 /bin/bash
+docker push rnaseq-pipeline-image-rsem2
+docker push molestethdockerid/rnaseq-pipeline-image2
+emacs Dockerfile 
+diff Dockerfile ../rnaseq-pipeline-image-rsem2/Dockerfile 
+diff Dockerfile ../rnaseq-pipeline-image2/Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker images
+docker rmi 7120348c7039
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 /bin/bash
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2
+ls
+logout
+ls
+cd rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+logout
+ls
+logout
+ls
+cd rnaseq-denovo-assembly/
+ls
+docker images
+docker rmi 2b78a9bfcc92
+docker rmi 93f776648a9b
+docker rmi 8b6a3d40e232
+docker rmi 65f5531bedb2
+docker images
+docker run --rm -it molestethdockerid/rnaseq-denovo-assembly /bin/bash
+ls
+logout
+docker run --rm -it molestethdockerid/rnaseq-denovo-assembly /bin/bash
+logout
+ls
+docker images
+logout
+docker images
+ls
+cd rnaseq-denovo-assembly/
+ls
+docker build -t 8100-9041-9814.dkr.ecr.us-east-1.amazonaws.com/rnaseq-denovo-assembly .
+docker images
+logout
+docker images
+docker rmi 8100-9041-9814.dkr.ecr.us-east-1.amazonaws.com/rnaseq-denovo-assembly
+docker login -u AWS -p AQECAHj6lc4XIJw/7ln0Hc00DMek6GExHCbY4RIpTMCI58InUwAAAyEwggMdBgkqhkiG9w0BBwagggMOMIIDCgIBADCCAwMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMOcX/CjMv9CmhyUwuAgEQgIIC1AS9qXgL7OZ7wTQCkc/VegC53KKegsLT4IREzrF31efBM+p5G0fpqcthOCPuRBC9MvX7xrhb6Qgpo/gBMsPRKHKYsUmMxIYc6vOGWRi6HKtHFADrIgJ/rKA5yl9GxW2fPtxWfse4HQsf+49Se9rRZphqfPhTCV+PUDrXPzlUHe9kxHieSKFmphTBHPjBs9yiv3MWuQAHvAZoR1UhkQ5MIzbcTbPrPoMjdz/9KThxIUpNHy9iYB7dMKnXAkrc+Q019kkdcdtxk/Pudz0uPthkW9STYl+67SJa2G0UaH2kaL/ozvgWEZE9TUwSba1V6b5yp66JOyBacOkyfDI1ZERFcM2fF6X1xFF5jxZhyL0jbTxmL09NPLWtdUzkf0VNMpXblYvgjCGfr5Zd/8WL41jhPxhpHdh/cI49kdBMcDV0JgWp3rnkjIY4LBZ5ZYBtYZMs1R0jIhrWAPE5PkZuHMs7zvKLVFA9yjU7IWxlN2XW6ApQ66ObxfSbltAwaaFDfGJzPHVmazQw2UGJYGKZ68C58ZjgB+6eqGlOPsTSE+3FPbB85mHb1L2QIT0PU8LFuv84I1TV6TOOjrB5qBs9l15qNAL3Iukltm1efPnkqZB1j5GsWTf4ewcsMJSUKLpNX0OyhdoMqAVwamxof3zCusVt+p5Wc4tHV4d9wABykct586MZ4EdDQfSctxLhjrVBSJdJRo7AGt9IMG5nzO978BNUdpMgvFo7pSZf3/u+DVFbKILBf8VZknLr73eHSndu964UuWZm+tgSqa0wOy/yOYISi2Nw9i+EGyrMgFqxQ75qyXLDVRT//rDVg+yNVNSoLLJdEVuRTu/gS8qREX1w1kGx02srgHJsMMuaKVymxm8qhV9gqPA+2HhhxdYbuQDt13Ra78bk4DXZac8O8zsMh6QofKhe4umRpMSL8u9d1TWXyZUsiryBv723blp2F5oRhhPPYnaFo+0= -e none https://810090419814.dkr.ecr.us-west-2.amazonaws.com
+cd rnaseq-denovo-assembly/
+docker build -t 810090419814.dkr.ecr.us-west-2.amazonaws.com/rnaseq-denovo-assembly .
+logout
+docker images
+docker login status
+ls -la
+cd .docker/
+ls
+emacs config.json 
+cd ..
+ls
+docker rmi 810090419814.dkr.ecr.us-west-2.amazonaws.com/rnaseq-denovo-assembly
+docker push molestethdockerid/rnaseq-denovo-assembly
+logout
+docker login
+docker images
+logout
+docker login -u AWS -p AQECAHj6lc4XIJw/7ln0Hc00DMek6GExHCbY4RIpTMCI58InUwAAAyEwggMdBgkqhkiG9w0BBwagggMOMIIDCgIBADCCAwMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMF5pUDJjgNugfCX3cAgEQgIIC1JgD4P+RbMAVEZ2DbGUnfv2klPXcTwMGgb+LyEkhG4+YIeSkiAmvOkHbax6Swu0ZagrgcRU2YyQ4vbIlZtm3GNqYY0PF0uCWoLQNIFPl5AHxmPoxIysVovc9TRSGTjq0SvMlbnMQa1rdPEdEZGGqnIJKmwKOw4HAuVdWo+YF1rQDpN8VZSx1VW5S6inMDGmzstlUiPA4k+3kRxAUZ92bbJh6baJ5l5QLyroAqi1UUxfQzpgIUrakYYY/RR5vMvx3f4kLfeCVzqVni/hIyx4991dS08IwgWm2cyg4GV9N7uUd7hEucF/ENIPuENtO1hX8qaFqDLjjv7icyyjp2Tu8bJ7c4scn2sFV8gWqopTyCeIxsBKoYIml8w16GGtPLVzCbXnIC9gcWpM+rldAas82iCloOD+P1NfcyIjHmwzf331Chc4DoiR6AdZkyQim5iijGWqR5SPTWYJEYs2wzN5OBtrM1OpO8qrCrUySgYv7zwaNeymOq9QF7esW98o3+7lPk8oOWIHRXuhD3r484ouPGfvxbBvy2JtngEmAmnJQFuS0Ee348WFSYCkc7gm/hYtM4HinK8FO3GwKSfZi+B6WLFJ/Ylf0ZcG8vmztSsvX43gjv/MmHIk9VBicCnr7xnhmLty7kshdO1Nf+esG2FupBBdevqWFvnEY00FYjvgi6Xddu6wGdh9BPrRKrBfw5RiC0WHmduYRzaGS+5CorTPeQRKUuEEb58vhwCo7VXiYWM/0Ki2KhNAfyvtLDYO0/hAc60PgzoEuPjPI1lGzH+x7Xp3izrnLqDpJBgXvS+RJd12RxXgdkxRxpVIYHZhmbLHZnw+pbV2Tbz5o1JKnVHeasuhY67S3oHzxJRBhJh8Ya7unE+iAcUKWq8YUWgCQEXbTZCiPixulwlkC/s4W32KD4+naTRVN2Jv9+I+bIHH2/5lGsI4OfdN/P52seEPGp8fsSh5ZV28= -e none https://810090419814.dkr.ecr.us-west-2.amazonaws.com
+cd rnaseq-denovo-assembly/
+docker images
+docker build -t molestethdockerid/rnaseq-denovo-assembly .
+docker images
+docker build -t rnaseq-denovo-assembly .
+docker images
+docker tag rnaseq-denovo-assembly:latest 810090419814.dkr.ecr.us-west-2.amazonaws.com/rnaseq-denovo-assembly:latest
+docker images
+docker push 810090419814.dkr.ecr.us-west-2.amazonaws.com/rnaseq-denovo-assembly:latest
+logout
+ls
+cd rnaseq-pipeline-image2/
+ls
+cd ../rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+emacs ../rnaseq-pipeline-image2/
+emacs ../rnaseq-pipeline-image2/Dockerfile 
+logout
+ls
+cd downsample-fastq-image/
+ls
+emacs Dockerfile 
+cd ../rnaseq-denovo-assembly/
+emacs Dockerfile 
+cd ../rnaseq-pipeline-image-rsem2/
+emacs Dockerfile 
+cd ../Pipeline/
+ls
+cd bam2fastq-1.1.0/
+ls
+cd ../../rnaseq-pipeline-image-rsem2/
+emacs Dockerfile
+emacs ../rnaseq-denovo-assembly/Dockerfile 
+emacs Dockerfile
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker images
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+ls
+docker images
+docker rmi 1ae6dcd12c8c
+docker images
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+ls
+logout
+ls
+cd rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+logout
+ls
+cd downsample-fastq-image/
+emacs Dockerfile 
+cd ../rnaseq-denovo-assembly/
+emacs Dockerfile 
+cd ../rnaseq-pipeline-image-rsem2/
+emacs Dockerfile 
+logout
+cd rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+R
+sudo apt-get install r-base-core
+R
+sudo R
+R
+ls
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+emacs Dockerfile
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+emacs Dockerfile
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+emacs Dockerfile
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+emacs Dockerfile
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+emacs Dockerfile
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+docker images
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2
+docker rmi 2966a8034714
+docker rmi 650bbf2933e2
+docker rmi 701733c26e7d
+docker images
+ls
+rm Dockerfile~
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+logout
+docker images
+docker pull icgc/icgc-storage-client
+pwd
+docker run -it --rm -e ACCESSTOKEN=8fcd952d-a565-4424-8660-63300990b782 -v /home/ubuntu:/host/home icgc/icgc-storage-client
+docker images
+docker rmi dee43377a37d
+logout
+ls
+cd rnaseq-pipeline-image2/
+emacs Dockerfile 
+logout
+cd rnaseq-pipeline-image-rsem2/
+emacs Dockerfile 
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2 .
+rm Dockerfile~
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2
+docker images
+docker rmi 681723f7d916
+emacs Dockerfile 
+logout
+ls
+docker images
+docker run --rm -it molestethdockerid/rnaseq-denovo-assembly bash
+logout
+ls
+docker images
+docker run --rm -it molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+logout
+ls
+cd rnaseq-pipeline-image-rsem2/
+ls
+ls -l Dockerfile 
+cd ..
+ls -l */Dockerfile
+logout
+ls
+cd Pipeline/
+ls
+cd ..
+ls
+cd rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+logout
+ls
+ls rnaseq-pipeline-image-rsem2/
+ls
+cp -r rnaseq-pipeline-image-rsem2/ rnaseq-pipeline-image-rsem3
+cd rnaseq-pipeline-image-rsem3/
+ls
+emacs Dockerfile 
+rm Dockerfile~
+cd ..
+cd rnaseq-pipeline-image-rsem3/
+ls
+docker images
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow .
+docker images
+docker run -it --rm molestethdockerid/rnaseq-pipeline-image-rsem2 bash
+docker ps -a
+docker rm $(docker ps -a -q)
+docker images
+docker run -it --rm molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow bash
+docker rmi 67eb8f7dbd79
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow .
+ls
+docker run -it --rm molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow bash
+emacs Dockerfile 
+rm Dockerfile~
+docker build -t molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow .
+docker run -it --rm molestethdockerid/rnaseq-pipeline-image-rsem2:pyflow bash
+docker images
+docker rmi 8bbff0db7a0d
+docker images
+logout
+docker images
+docker push adb38ef2ed3d
+docker push molestethdockerid/rnaseq-pipeline-image-rsem2
+docker images
+logout
+ls
+cd Pipeline/
+ls
+cd ../rnaseq-pipeline-image-rsem2/
+ls
+emacs Dockerfile 
+logout
+ls
+ls Pipeline/
+logout
+ls
+cd Pipeline/
+ls
+cd ..
+ls -l *
+cd rnaseq-pipeline-image2/
+emacs Dockerfile 
+cd ..
+diff rnaseq-pipeline-image-rsem2/Dockerfile rnaseq-pipeline-image-rsem3/Dockerfile 
+logout
+ls
+cd Pipeline/
+ls
+cd ..
+ls -l
+ls -l *
+emacs ~/.bash_history 
+docker images
+logout
