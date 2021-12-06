@@ -1,0 +1,42 @@
+##merge FASTQ files
+while IFS=, read -r f1 f2; do if [ -f ~/BaseSpace/Projects/X202SC20020770_Z01_F002_2020721/AppResults/$f2/Files/$f2.bam ]; then samtools merge -@ 12 $f2.merged.bam ~/BaseSpace/Projects/X202SC20020770_Z01_F002_2020721/AppResults/$f2/Files/$f2.bam ~/BaseSpace/Projects/X202SC20020770_Z01_F003/AppResults/$f1/Files/$f1.bam; fi; done < mapped_patient.csv
+
+while IFS=, read -r f1 f2; do samtools merge -@ 12 $f2.merged.bam ~/BaseSpace/Projects/X202SC20020770_Z01_F002_2020721/AppResults/$f2/Files/$f2.bam ~/BaseSpace/Projects/X202SC20020770_Z01_F003/AppResults/$f1/Files/$f1.bam; done < mapped_patient.csv
+
+while IFS=, read -r f1 f2; do if [ -f ~/BaseSpace/Projects/X202SC20020770_Z01_F004/Samples/$f2/Files/*_R1_*.fastq.gz ]; then a=${f1/D/}; cat ~/BaseSpace/Projects/X202SC20020770_Z01_F004/Samples/$f2/Files/*_R2_*.fastq.gz ~/BaseSpace/Projects/X202SC20020770_Z01_F003/Samples/$f1/Files/*_R2_*.fastq.gz > $f2\_S$a\_L001_R2_001.fastq.gz; fi; done < mapped_patient.csv
+
+while IFS=, read -r f1 f2; do name=${f2/D/S}; if [ ! -f merge$f2\_$name\_L001_R1_001.fastq.gz ]; then echo "$f1 $f2" > tmp; bcftools reheader -s tmp -o $f2.hard-filtered.gvcf.gz --threads 12 ~/BaseSpace/Projects/X202SC20020770_Z01_F003/AppResults/$f1/Files/$f1.hard-filtered.gvcf.gz; fi; done < mapped_patient.csv
+
+
+
+##BaseSpace CLI
+bs create biosample -n mergeD36 -p X202SC20020770_Z01_F003
+bs upload dataset -p 201943754 mergeD36_S1_L001_R1_001.fastq.gz
+
+
+
+
+##merge, filter & annotate VCF files
+bcftools merge -l gvcf_files.txt -m both -o all_merged.gvcf.gz -Oz --threads 12 &
+
+bcftools norm -m -any -Ou --threads 12 all.merged.gvcf.gz | bcftools norm -f ~/annotations/hg19.fa -Ou --threads 12 | bcftools filter -e 'TYPE="ref"' -Ou --threads 12 | bcftools annotate -Oz -I +'%CHROM\_%POS\_%REF\_%FIRST_ALT' --threads 12 -o all.merged.normed.filtered.gvcf.gz &
+
+bcftools index -t --threads 12 all.merged.normed.filtered.gvcf.gz
+
+bcftools annotate -a ~/annotations/DRAGEN_inputs/hHRC_r1-1_GRCh37_wgs_mac5.vcf.gz -c ID --collapse some --threads 12 -Oz -o all.merged.normed.filtered.annotated.gvcf.gz all.merged.normed.filtered.gvcf.gz &
+
+bcftools reheader -s new_sample_name.txt --threads 12 -o tmp.gvcf.gz all.merged.normed.filtered.annotated.gvcf.gz
+mv tmp.gvcf.gz all.merged.normed.filtered.annotated.gvcf.gz
+bcftools index -t --threads 12 all.merged.normed.filtered.annotated.gvcf.gz
+
+
+
+##run gemma
+~/bin/gemma-0.98.1-linux-static -bfile gq15.filtered -gk 2 -o gemma.relate
+~/bin/gemma-0.98.1-linux-static -bfile gemma.gq15filtered -k gemma/gemma.relate.sXX.txt -lmm 4 -miss 0.25 -n 3 -c gemma.gq15filtered.NPI10.cov -snps gemma.gq15filtered.NPI10.snps -o NPI10 -outdir gemma
+
+
+
+##run IMPUTE2 for imputation
+plink --bfile gq15 --chr 19 --geno 0.9 --recode oxford --out gq15.chr19
+~/bin/impute_v2.3.2_x86_64_static/impute2 -m ~/annotations/1000GP_Phase3/genetic_map_chr19_combined_b37.txt -h ~/annotations/1000GP_Phase3/1000GP_Phase3_chr19.hap.gz -l ~/annotations/1000GP_Phase3/1000GP_Phase3_chr19.legend.gz -g ../../WGS_analysis_run5/gq15.chr19.gen -int 52182754 52582754 -Ne 20000 -os 0 1 2 -pgs_miss -o rs113819549.gq15.impute2
