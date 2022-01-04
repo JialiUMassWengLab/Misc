@@ -57,14 +57,14 @@ pdf("clustering_r0.5.pdf")
 DimPlot(obj,reduction="umap",label=TRUE,pt.size=0.5) + NoLegend()
 dev.off()
 
-saveRDS(obj,"seuratOjb.rds")
-
 markers <- FindAllMarkers(obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.5)
 write.table(markers,file="marker.genes.csv",sep=",")
 options(tibble.print_max = Inf)
 markers %>% group_by(cluster) %>% slice_max(n = 8, order_by = avg_logFC)
 
-cells = obj@active.ident[obj@active.ident==15 | obj@active.ident==19]
+saveRDS(obj,"seuratOjb.rds")
+
+#cells = obj@active.ident[obj@active.ident==15 | obj@active.ident==19]
 #pdf("gene_expr_plot.pdf")
 #FeaturePlot(obj,features=c("C1QA","C1QB","C1QC","FCGBP","FCGR3A","CD14","C3","FYB"),cells=names(cells))
 #dev.off()
@@ -80,3 +80,9 @@ for (g in genes[,1])
    }
 }
 dev.off()
+
+new.cluster.ids <- c("Oligodendrocyte","Excitatory Neu","Excitatory Neu","Oligodendrocyte","Astrocyte","Astrocyte","OPC","Inhibitory Neu","Excitatory Neu","Excitatory Neu","Inhibitory Neu","Inhibitory Neu","Excitatory Neu","Excitatory Neu","Inhibitory Neu","Microglia","Astrocyte","Excitatory Neu","Other","Microglia","Excitatory Neu","Endothelial cell","Other")
+names(new.cluster.ids) <- levels(obj)
+obj <- RenameIdents(obj,new.cluster.ids)
+avg <- AverageExpression(obj,slot="data")[[1]]
+write.table(avg,file="average_celltype_expr.csv",sep=",",quote=FALSE)
