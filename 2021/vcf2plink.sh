@@ -1,5 +1,6 @@
 #! /usr/bin/bash
 
+#for i in `seq 1 20`
 for i in NIA_JG_1898_samples_GRM_WGS_b37_JointAnalysis01_2017-12-08_*_variants.vcf.gz
 do
     anno=${i/variants.vcf.gz/variants.annotated.vcf.gz}

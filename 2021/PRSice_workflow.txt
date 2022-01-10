@@ -1,0 +1,12 @@
+PRSice_linux -b ../Source/Kunkle_etal_Stage1_results.txt --a1 Effect_allele --a2 Non_Effect_allele --beta --stat Beta -p Pvalue --chr Chromosome --bp Position --snp MarkerName -t chr#_ROSMAP_maf0.01 --extract try.valid -f ../Output/ROSMAP_covariate4PLINK.txt --pheno-col diagnosis --thread 8 -o try
+
+Rscript ~/bin/PRSice.R --dir . --prsice ~/bin/PRSice_linux -b ../Source/Kunkle_etal_Stage1_results.txt --a1 Effect_allele --a2 Non_Effect_allele --beta --stat Beta -p Pvalue --chr Chromosome --bp Position --snp MarkerName -t ROSMAP_PRSice/chr#_ROSMAP_PRSice,ROSMAP_PRSice.fam --clump-r2 0.25 --extract try.valid --print-snp --no-full --binary-target T --bar-levels 1e-4,5e-4,0.001,0.005,0.01,0.05,0.1,0.2,0.5 -C ../Output/ROSMAP_covariate4PLINK.txt --cov-col sex --thread 8 -o try
+
+Rscript ~/bin/PRSice.R --dir . --prsice ~/bin/PRSice_linux -b ../Source/Kunkle_etal_Stage1_results.txt --a1 Effect_allele --a2 Non_Effect_allele --beta --stat Beta -p Pvalue --chr Chromosome --bp Position --snp MarkerName -t Mayo_TCX_maf0.01/chr#_Mayo_TCX_maf0.01,Mayo_TCX_PRSice.fam --clump-r2 0.25 --extract try_Mayo.valid --print-snp --no-full --binary-target T -C ../Output/Mayo_TCX_covariate4PLINK.txt --cov-col sex --thread 8 -o try_Mayo
+
+Rscript ~/bin/PRSice.R --dir . --prsice ~/bin/PRSice_linux -b ../Source/Kunkle_etal_Stage1_results.txt --a1 Effect_allele --a2 Non_Effect_allele --beta --stat Beta -p Pvalue --chr Chromosome --bp Position --snp MarkerName -t MSBB_PHG_PRSice/chr#_MSBB_PHG_PRSice,MSBB_PHG_PRSice.fam --clump-r2 0.25 --extract try.valid --print-snp --no-full --binary-target T -C ../Output/MSBB_PHG_covariate4PLINK.txt --cov-col sex --thread 8 -o try_MSBB
+
+Rscript ~/bin/PRSice.R --dir . --prsice ~/bin/PRSice_linux -b ../Source/Kunkle_etal_Stage1_results.txt --a1 Effect_allele --a2 Non_Effect_allele --beta --stat Beta -p Pvalue --chr Chromosome --bp Position --snp MarkerName -t ROSMAP_PRSice/chr#_ROSMAP_PRSice,ROSMAP_PRSice.fam --extract try.valid --print-snp --no-full --binary-target T -C ../Output/ROSMAP_covariate4PLINK.txt --cov-col sex --thread 8 -o try_ROSMAP
+
+
+for i in ROSMAP_maf0.01/*.bim; do j=`basename $i`; name=${j/_maf0.01.bim/_PRSice}; plink --bfile ${i/.bim/} --make-bed --keep ROSMAP_PRSice.fam --out $name; done
