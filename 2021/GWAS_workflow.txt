@@ -19,7 +19,7 @@ bs upload dataset -p 201943754 mergeD36_S1_L001_R1_001.fastq.gz
 ##merge, filter & annotate VCF files
 bcftools merge -l gvcf_files.txt -m both -o all_merged.gvcf.gz -Oz --threads 12 &
 
-bcftools norm -m -any -Ou --threads 12 all.merged.gvcf.gz | bcftools norm -f ~/annotations/hg19.fa -Ou --threads 12 | bcftools filter -e 'TYPE="ref"' -Ou --threads 12 | bcftools annotate -Oz -I +'%CHROM\_%POS\_%REF\_%FIRST_ALT' --threads 12 -o all.merged.normed.filtered.gvcf.gz &
+bcftools norm -m -any -Ou --threads 12 all.merged.gvcf.gz | bcftools norm -f ~/annotations/hg19.fa -Ou --threads 12 | bcftools filter -e 'TYPE="ref" || TYPE="other"' -Ou --threads 12 | bcftools annotate -Oz -I +'%CHROM\_%POS\_%REF\_%FIRST_ALT' --threads 12 -o all.merged.normed.filtered.gvcf.gz &
 
 bcftools index -t --threads 12 all.merged.normed.filtered.gvcf.gz
 
