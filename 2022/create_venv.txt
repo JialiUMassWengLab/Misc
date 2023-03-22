@@ -1,0 +1,10 @@
+python3 -m venv venv --prompt="spatialtx" --clear --system-site-packages
+source venv/bin/activate
+python -m pip install squidpy
+python -m pip install pybiomart
+python -m pip install -U scikit-learn
+python -m pip install -U pandas
+python -m pip install statsmodels
+python -m pip install adjustText
+python -m pip install ipykernel
+python3 -m ipykernel install --user --name=venv3 --display-name "spatialTx"
