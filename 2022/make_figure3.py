@@ -73,7 +73,7 @@ def main():
         plt.savefig(pdf,format='pdf')
         plt.close()
     pdf.close()
-    '''
+
     #stacked violin plot or matrixplot
     geneLists = {'GC': ['Pawr','Lox','Ctgf','Mitf','Ablim1','Dock9','Amhr2','Amh',\
                         'Top2a','Mki67','Prc1','Smc4','Lhcgr','Pappa','Alas1','Cyp19a1'],
@@ -127,19 +127,23 @@ def main():
         adata1.obs['treatment1'] = adata1.obs['treatment'].map(mapping)
 
         fig,ax = plt.subplots(figsize=(16,10))
-        vi = sc.pl.dotplot(adata1,geneLists,groupby='treatment1',standard_scale='var',title=celltype,categories_order=orders,swap_axes=True,return_fig=True,ax=ax)
+        vi = sc.pl.dotplot(adata1,geneLists,groupby='treatment1',standard_scale='var',title=celltype,categories_order=orders,mean_only_expressed=True,swap_axes=True,return_fig=True,ax=ax)
+        vi.style(cmap='Reds',largest_dot=350)
         ax1 = vi.get_axes()['mainplot_ax']
         ax1.set_facecolor('white')
         labels = ax1.get_xticklabels()
         ax1.set_xticklabels(labels,rotation=30,ha='right')
         ax1.set_yticklabels(ax1.get_yticklabels(),fontstyle='italic')
+        ytick_colors=['green','green','orange','orange','blue','blue','red','red','red']
+        for i,t in enumerate(ax1.get_yticklabels()):
+            t.set_color(ytick_colors[i])
         ax2 = vi.get_axes()['size_legend_ax']
         ax2.set_facecolor('white')
         plt.tight_layout()
         plt.savefig(pdf,format='pdf')
         plt.close()
     pdf.close()
-    '''
+
     
     
 if __name__=='__main__':
