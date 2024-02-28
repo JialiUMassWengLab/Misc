@@ -1,0 +1,8 @@
+. /mnt/efs/app/anaconda3/v2022.10/etc/profile.d/conda.sh
+conda create -n tiledb
+conda activate tiledb
+conda install -c conda-forge -c bioconda -c tiledb tiledbvcf-py
+conda install -c conda-forge tiledb-py
+conda install ipykernel
+python -m ipykernel install --user --name=tiledb --display-name "TileDB"
+pip install tiledb-cloud
