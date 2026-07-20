@@ -56,8 +56,15 @@ The script writes results **incrementally**: each batch is flushed to disk befor
 
 ## Usage
 
+### Environment setup (first time only)
 ```bash
-uv run ESMC_coding_variant_llr_calculation.py \
+uv sync
+uv pip install esm@git+https://github.com/Biohub/esm.git@main
+```
+
+```bash
+source .venv/bin/activate
+python ESMC_coding_variant_llr_calculation.py \
     --input variants.tsv \
     --output results.csv \
     --entrez-email your.email@institution.org
@@ -80,14 +87,15 @@ uv run ESMC_coding_variant_llr_calculation.py \
 Fetching sequences from NCBI can take several minutes for large variant sets. Save them once and reuse:
 
 ```bash
+source .venv/bin/activate
 # First run: fetch and save
-uv run ESMC_coding_variant_llr_calculation.py \
+python ESMC_coding_variant_llr_calculation.py \
     --input variants.tsv \
     --save-sequences sequences.fasta \
     --entrez-email your.email@institution.org
 
 # Subsequent runs: skip NCBI fetch
-uv run ESMC_coding_variant_llr_calculation.py \
+python ESMC_coding_variant_llr_calculation.py \
     --input variants.tsv \
     --sequences sequences.fasta
 ```
