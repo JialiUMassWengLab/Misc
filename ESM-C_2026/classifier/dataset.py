@@ -242,6 +242,163 @@ def collate_fn_position(batch: list[dict]) -> dict:
     }
 
 
+def load_wt_variant_embeddings(
+    wt_cache_path: str | Path,
+    variant_cache_path: str | Path,
+    metadata_tsv: str | Path,
+) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor],
+           list[tuple[str, str, int, int]]]:
+    """Load per-residue WT and variant embedding caches for siamese-style models.
+
+    Returns:
+        wt_embeddings: NP_accession -> (seq_len+2, D) float32 tensor
+        var_embeddings: variant_name -> (seq_len+2, D) float32 tensor
+        rows: (variant_name, np_accession, label, sub_pos) tuples in metadata
+              row order, filtered to variants present in BOTH caches.
+    """
+    wt_path = Path(wt_cache_path)
+    var_path = Path(variant_cache_path)
+    for p in (wt_path, var_path):
+        if not p.exists():
+            raise FileNotFoundError(f"{p} not found.")
+
+    print(f"loading {wt_path} ...")
+    wt_embeddings: dict[str, torch.Tensor] = torch.load(
+        wt_path, map_location="cpu", weights_only=True
+    )
+    print(f"  WT: {len(wt_embeddings)} entries (keyed by NP_ accession)")
+
+    print(f"loading {var_path} ...")
+    var_embeddings: dict[str, torch.Tensor] = torch.load(
+        var_path, map_location="cpu", weights_only=True
+    )
+    print(f"  variant: {len(var_embeddings)} entries (keyed by variant_name)")
+
+    df = pd.read_csv(metadata_tsv, sep="\t")
+    cat = df["category"].astype(str)
+    keep = cat.str.startswith("L-") | cat.str.startswith("G-")
+    df = df.loc[keep].copy()
+    df["label"] = df["category"].str.startswith("G-").astype(int)
+
+    in_var = df["variant_name"].isin(var_embeddings)
+    in_wt = df["protein_accession"].isin(wt_embeddings)
+    n_miss_var = int((~in_var).sum())
+    n_miss_wt = int((~in_wt).sum())
+    if n_miss_var:
+        print(f"  dropping {n_miss_var} rows without variant embedding")
+    if n_miss_wt:
+        print(f"  dropping {n_miss_wt} rows without WT embedding")
+    df = df.loc[in_var & in_wt].reset_index(drop=True)
+
+    parsed = df["variant_name"].map(_parse_missense)
+    kept = parsed.notna()
+    n_dropped = int((~kept).sum())
+    if n_dropped:
+        print(f"  dropping {n_dropped} non-missense / Ter variants")
+    df = df.loc[kept].copy()
+    df["sub_pos"] = parsed.loc[kept].map(lambda t: t[1])
+
+    rows = [
+        (str(r.variant_name), str(r.protein_accession), int(r.label), int(r.sub_pos))
+        for r in df.itertuples(index=False)
+    ]
+    print(f"  {len(rows)} usable WT-variant pairs")
+    return wt_embeddings, var_embeddings, rows
+
+
+class SiamesePairDataset(Dataset):
+    """Serves (wt_embedding, variant_embedding, label) triples for siamese
+    attention models. Both embeddings are per-residue tensors of shape
+    (seq_len+2, D) with identical seq_len (missense preserves length).
+    """
+
+    def __init__(
+        self,
+        wt_embeddings: dict[str, torch.Tensor],
+        var_embeddings: dict[str, torch.Tensor],
+        rows: list[tuple[str, str, int, int]],
+        split: str = "train",
+        split_seed: int = 42,
+        split_ratios: tuple[float, float, float] = (0.75, 0.25, 0.0),
+    ) -> None:
+        if split not in {"train", "val", "test"}:
+            raise ValueError(f"split must be train/val/test, got {split!r}")
+        if abs(sum(split_ratios) - 1.0) > 1e-6:
+            raise ValueError(f"split_ratios must sum to 1, got {split_ratios}")
+
+        self.wt_embeddings = wt_embeddings
+        self.var_embeddings = var_embeddings
+
+        n = len(rows)
+        perm = torch.randperm(n, generator=torch.Generator().manual_seed(split_seed)).tolist()
+        n_train = int(n * split_ratios[0])
+        n_val = int(n * split_ratios[1])
+        splits = {
+            "train": perm[:n_train],
+            "val": perm[n_train : n_train + n_val],
+            "test": perm[n_train + n_val :],
+        }
+        indices = splits[split]
+        self.rows_split = [rows[i] for i in indices]
+
+        self.n_lof = sum(1 for _, _, y, _ in self.rows_split if y == LABEL_LOF)
+        self.n_gof = sum(1 for _, _, y, _ in self.rows_split if y == LABEL_GOF)
+        print(f"[{split} / siamese] {len(self.rows_split)} pairs "
+              f"({self.n_lof} LOF, {self.n_gof} GOF)")
+
+    def __len__(self) -> int:
+        return len(self.rows_split)
+
+    def __getitem__(self, idx: int) -> dict:
+        variant_name, np_acc, label, _pos = self.rows_split[idx]
+        wt_emb = self.wt_embeddings[np_acc].float()
+        var_emb = self.var_embeddings[variant_name].float()
+        # Missense keeps sequence length identical between WT and variant.
+        assert wt_emb.shape == var_emb.shape, (
+            f"shape mismatch for {variant_name}: WT {tuple(wt_emb.shape)} "
+            f"vs variant {tuple(var_emb.shape)}"
+        )
+        return {
+            "wt_embedding": wt_emb,
+            "var_embedding": var_emb,
+            "label": torch.tensor(label, dtype=torch.float32),
+            "variant_name": variant_name,
+        }
+
+
+def collate_fn_siamese(batch: list[dict]) -> dict:
+    """Pad WT and variant sequences to the same batch-max length; build a
+    single shared attention mask (identical for WT and variant since missense
+    keeps lengths equal).
+    """
+    lengths = [item["wt_embedding"].shape[0] for item in batch]
+    max_len = max(lengths)
+    embed_dim = batch[0]["wt_embedding"].shape[1]
+    b = len(batch)
+
+    wt_padded = torch.zeros(b, max_len, embed_dim, dtype=torch.float32)
+    var_padded = torch.zeros(b, max_len, embed_dim, dtype=torch.float32)
+    attention_mask = torch.zeros(b, max_len, dtype=torch.bool)
+    labels = torch.zeros(b, dtype=torch.float32)
+    variant_names: list[str] = []
+
+    for i, item in enumerate(batch):
+        seq_len = lengths[i]
+        wt_padded[i, :seq_len] = item["wt_embedding"]
+        var_padded[i, :seq_len] = item["var_embedding"]
+        attention_mask[i, :seq_len] = True
+        labels[i] = item["label"]
+        variant_names.append(item["variant_name"])
+
+    return {
+        "wt_embedding": wt_padded,
+        "var_embedding": var_padded,
+        "attention_mask": attention_mask,
+        "label": labels,
+        "variant_name": variant_names,
+    }
+
+
 class VariantPrecomputedPositionDataset(Dataset):
     """Serves pre-pooled (D,) position-only embedding vectors.
 
